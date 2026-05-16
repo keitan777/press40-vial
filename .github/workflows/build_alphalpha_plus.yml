@@ -1,0 +1,42 @@
+name: Build Alphalpha Plus RP2040 Vial firmware
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli:latest
+    steps:
+      - name: Checkout Vial-QMK
+        uses: actions/checkout@v4
+        with:
+          repository: vial-kb/vial-qmk
+          ref: vial
+          path: vial-qmk
+          submodules: recursive
+
+      - name: Checkout Alphalpha Plus source
+        uses: actions/checkout@v4
+        with:
+          repository: subottimale/alphalpha_plus
+          ref: main
+          path: alphalpha_plus
+
+      - name: Copy keyboard source into Vial-QMK
+        run: |
+          mkdir -p vial-qmk/keyboards/subottimale
+          cp -R "alphalpha_plus/v2 Files/Firmware/Vial/Source" vial-qmk/keyboards/subottimale/alphalpha_plus
+
+      - name: Build Elite-Pi/RP2040 firmware
+        working-directory: vial-qmk
+        run: qmk compile -kb subottimale/alphalpha_plus -km vial -e CONVERT_TO=elite_pi
+
+      - name: Upload UF2
+        uses: actions/upload-artifact@v4
+        with:
+          name: alphalpha-plus-vial-elite-pi-rp2040-uf2
+          path: vial-qmk/*.uf2
