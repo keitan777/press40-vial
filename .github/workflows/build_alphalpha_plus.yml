@@ -31,6 +31,27 @@ jobs:
           mkdir -p vial-qmk/keyboards/subottimale
           cp -R "alphalpha_plus/v2 Files/Firmware/Vial/Source" vial-qmk/keyboards/subottimale/alphalpha_plus
 
+      - name: Apply RP2040 Vial settings
+        run: |
+          perl -0pi -e 's/#define DYNAMIC_KEYMAP_LAYER_COUNT\s+\d+/#define DYNAMIC_KEYMAP_LAYER_COUNT 32/' vial-qmk/keyboards/subottimale/alphalpha_plus/config.h
+          cat >> vial-qmk/keyboards/subottimale/alphalpha_plus/keymaps/vial/config.h <<'EOF'
+          
+          #define WEAR_LEVELING_BACKING_SIZE 65536
+          #define WEAR_LEVELING_LOGICAL_SIZE 32768
+          EOF
+          cat >> vial-qmk/keyboards/subottimale/alphalpha_plus/keymaps/vial/rules.mk <<'EOF'
+          
+          QMK_SETTINGS = yes
+          TAP_DANCE_ENABLE = yes
+          COMBO_ENABLE = yes
+          KEY_OVERRIDE_ENABLE = yes
+          EXTRAKEY_ENABLE = yes
+          MAGIC_ENABLE = yes
+          GRAVE_ESC_ENABLE = yes
+          MOUSEKEY_ENABLE = yes
+          NKRO_ENABLE = yes
+          EOF
+
       - name: Build Elite-Pi/RP2040 firmware
         working-directory: vial-qmk
         run: qmk compile -kb subottimale/alphalpha_plus -km vial -e CONVERT_TO=elite_pi
