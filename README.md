@@ -14,4 +14,4 @@ Copy the created uf2 file to the RPI_RP2 drive.
 
 ## Firmware Version
 * 2025/04/01 Released version 1.0
-* 2025/04/01 Released version 1.1 -Fix Keyboard Layout
+* 2025/08/11 Released version 1.1 -Fix Keyboard Layout
