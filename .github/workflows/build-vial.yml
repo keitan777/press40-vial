@@ -1,0 +1,52 @@
+name: Build Vial Firmware
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'press40/**'
+      - '.github/workflows/build-vial.yml'
+  pull_request:
+    paths:
+      - 'press40/**'
+      - '.github/workflows/build-vial.yml'
+
+permissions: {}
+
+jobs:
+  build:
+    name: Build 3dango_academy/press40:vial
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli@sha256:2dc05fc9f32efebd6b05c2b8676ee548358bc7e151e9dbf4dac6b6eed4513b07
+
+    steps:
+      - name: Checkout press40-vial
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Prepare Vial-QMK
+        run: |
+          git clone --depth 1 --branch vial https://github.com/vial-kb/vial-qmk.git /tmp/vial-qmk
+          git config --global --add safe.directory /tmp/vial-qmk
+          mkdir -p /tmp/vial-qmk/keyboards/3dango_academy
+          cp -a press40 /tmp/vial-qmk/keyboards/3dango_academy/press40
+
+      - name: Build firmware
+        working-directory: /tmp/vial-qmk
+        run: |
+          qmk compile -kb 3dango_academy/press40 -km vial
+          find .build -type f \( -name '*.uf2' -o -name '*.hex' -o -name '*.bin' \) -print
+
+      - name: Copy firmware to workspace
+        run: |
+          mkdir -p artifacts
+          find /tmp/vial-qmk/.build -type f -name '*.uf2' -exec cp {} artifacts/ \;
+          test -n "$(find artifacts -type f -name '*.uf2' -print -quit)"
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: press40-vial-firmware
+          path: artifacts/*.uf2
+          if-no-files-found: error
