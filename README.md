@@ -12,4 +12,5 @@ Copy the created uf2 file to the RPI_RP2 drive.
 * Physical reset button: Press the button on the PCB's reverse side while connecting the USB cable.
 * Keycode in layout: Press the key mapped to `QK_BOOT` if it is available.
 
+## Firmware Version
 2025/04/01 Released version 1.0
