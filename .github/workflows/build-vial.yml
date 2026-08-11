@@ -31,6 +31,7 @@ jobs:
           git config --global --add safe.directory /tmp/vial-qmk
           cd /tmp/vial-qmk
           git submodule update --init --recursive
+          test -f lib/chibios/os/hal/lib/streams/streams.mk
           mkdir -p keyboards/3dango_academy
           cp -a "$GITHUB_WORKSPACE/press40" keyboards/3dango_academy/press40
 
