@@ -27,10 +27,12 @@ jobs:
 
       - name: Prepare Vial-QMK
         run: |
-          git clone --depth 1 --branch vial https://github.com/vial-kb/vial-qmk.git /tmp/vial-qmk
+          git clone --depth 1 --recurse-submodules --branch vial https://github.com/vial-kb/vial-qmk.git /tmp/vial-qmk
           git config --global --add safe.directory /tmp/vial-qmk
-          mkdir -p /tmp/vial-qmk/keyboards/3dango_academy
-          cp -a press40 /tmp/vial-qmk/keyboards/3dango_academy/press40
+          cd /tmp/vial-qmk
+          git submodule update --init --recursive
+          mkdir -p keyboards/3dango_academy
+          cp -a "$GITHUB_WORKSPACE/press40" keyboards/3dango_academy/press40
 
       - name: Build firmware
         working-directory: /tmp/vial-qmk
